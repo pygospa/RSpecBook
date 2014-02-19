@@ -5,5 +5,5 @@ developed example applications while reading:
 Cucumber, and Friends*
 
 The book is published by *The Pragmatic Programmers* and can be obtained by
-their (Website)[http://pragprog.com/book/achbd/the-rspec-book].
+their [Website](http://pragprog.com/book/achbd/the-rspec-book).
 
