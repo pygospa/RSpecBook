@@ -113,4 +113,69 @@ failling Cucumber step.
    8. Repeate #2 - #7 until screnario is passing. When passing:
    9. New Scenario (Cucumber)
 
+## Chapter 2: Hello
+
+### Installation
+
+Versions for the book code to definitly work:
+
+   - ruby 1.8.7
+   - rubygems 1.3.7
+   - rspec 2.0.0
+   - rspec-raisl 2.0.0
+   - cucumber 0.9.2
+   - cucumber-rails 0.3.2
+   - webrat 0.7.2
+   - selenium-client 1.2.18
+   - rails 3.0.0
+
+`gem install rpsec --version 2.0.0` with testing via `rspec --help`
+`gem install cucumber --version 0.9.2` with testing via `cucumber --help`
+
+### Hello RSpec
+
+File `hello/greeter_spec.rb`
+
+    describe "RSpec Greeter" do
+      it "should say 'Hello RSpec!' when it receives the greeter() message" do
+        greter = RSpecGreeter.new
+	greeting = greeter.greet
+	greeting.should == "Hallo RSpec"
+      end
+    end
+
+   1. Line: *example group* using `describe()` method
+   2. Line: *example* using `it()` method
+   3. Line: Within example `RSpecGreeter` is initialized as the *Given* in this example, i.e. the Context that is taken as granted when starting
+   4. Line: Within example, we assign value returned by `greet()` to variable. This is the *When* part, i.e. the action we are focussed on
+   5. Line: The *Then* part as expectation of what the value of the variable should be, our outcome.
+
+Running it: `rspec greeter_spec.rb` leads to error `uninitialized constant
+RSpecGreeter` telling us, there is no RSpecGreeter class.
+
+Defining it in `hello/greeter_spec.rb` (to keep things simple)
+
+    class RSpecGreeter
+      def greeter
+        "Hello RSpec!"
+      end
+    end
+
+    describe "RSpec Greeter" do
+      it "should say 'Hello RSpec!' when it receives the greeter() message" do
+        greter = RSpecGreeter.new
+	greeting = greeter.greet
+	greeting.should == "Hallo RSpec"
+      end
+    end
+
+Output: 
+
+    .
+    Finished in 0.00075 seconds
+    1 example, 0 failures
+
+Dots in the first line represent the number of examples run
+
+
 
