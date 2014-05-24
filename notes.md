@@ -145,7 +145,7 @@ Versions for the book code to definitly work:
 
 ### Hello RSpec
 
-File `hello/greeter_spec.rb`
+File `01_hello/greeter_spec.rb`
 
     describe "RSpec Greeter" do
       it "should say 'Hello RSpec!' when it receives the greeter() message" do
@@ -175,8 +175,8 @@ Defining it in `hello/greeter_spec.rb` (to keep things simple)
     describe "RSpec Greeter" do
       it "should say 'Hello RSpec!' when it receives the greeter() message" do
         greter = RSpecGreeter.new
-	greeting = greeter.greet
-	greeting.should == "Hallo RSpec"
+        greeting = greeter.greet
+        greeting.should == "Hallo RSpec"
       end
     end
 
