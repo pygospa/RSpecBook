@@ -566,5 +566,86 @@ In Cucumber Acceptance Criteria is added via a "Scenario":
 Setup: When not already having any line of code, add `features/support/env.rb`
 to make cucumber know that we are using ruby (env.java for Java, etc.)
 
-    
+If the feature is complexe and not describable with the Connextra-format, e.g.
+when describing an algorithm, it makes sense to write it in free-form.
 
+E.g.:
+
+    Feature: code-breaker submits guess
+    
+      As a code-breaker
+      I want to submit a guess
+      So that I can try to break the code
+
+Doesn't really help understanding how the algorithm works, that we want to
+implement. Even a scenario doesn't really help:
+
+    Feature: code-breaker submits guess
+    
+      As a code-breaker
+      I want to submit a guess
+      So that I can try to break the code
+    
+      Scenario: all exact matches
+        Given the secret code is "1234"
+        Wehn I guess "1234"
+        Then the mark should be "++++"
+
+One might guess the marks meaning with more extensive Scenarios, but it still
+requires interpretation and could lead to missinterpretations. So better use
+free-format here:
+
+    Feature: code-breaker submits guess
+    
+      The code-breaker submits a guess of four numbers.  The game marks the guess
+      with + and - signs.
+    
+      For each number in the guess that matches the number and position of a number
+      in the secret code, the mark includes one +. For each number in the guess
+      that matches the number but not the position of a number in the secret code,
+      a - is added to the mark.
+    
+      Scenario: all exact matches
+        Given the secret code is "1234"
+        When I guess "1234"
+        Then the mark should be "++++"
+    
+This actually makes a huge difference for this example!
+
+To still make it more demonstrative it's advisable to add further scenarios to show behaviour of the algorithm under different conditions:
+
+    Scenario: all exact matches
+      Given the secret code is "1234"
+      When I guess "1234"
+      Then the mark should be "++++"
+    
+    Scenario: 2 exact matches and 2 number matches
+      Given the secret code is "1234"
+      When I guess "1243"
+      Then the mark should be "++--"
+    
+    Scenario: 1 exact match and 3 number matches
+      Given the secret code is "1234"
+      When I guess "1342"
+      Then the mark should be "+---"
+    
+    Scenario: 4 number matches
+      Given the secret code is "1234"
+      When I guess "4321"
+      Then the mark should be "----"
+
+Problem: This doesn't scale very good:
+
+For these cases Cucumber offeres tools to keep everything DRY without sacrificing expressiveness and cohesion. One of them is *scenario outline*.
+
+### Scenario Outline
+
+    Scenario Outline: submit guess
+      Given the secret code is "<code>"
+      When I guess "<guess>"
+      Then the mark should be "<mark>"
+
+With *scenario outlines* variable data is referenced by placeholders in angle brackets. The Data is then provided by *scenarios* keyword with a tabular representation:
+
+    Scenarios: all numbers correct
+      | code | guess | mark | 
