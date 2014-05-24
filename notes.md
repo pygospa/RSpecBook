@@ -167,7 +167,7 @@ RSpecGreeter` telling us, there is no RSpecGreeter class.
 Defining it in `hello/greeter_spec.rb` (to keep things simple)
 
     class RSpecGreeter
-      def greeter
+      def greet
         "Hello RSpec!"
       end
     end
