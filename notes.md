@@ -649,3 +649,29 @@ With *scenario outlines* variable data is referenced by placeholders in angle br
 
     Scenarios: all numbers correct
       | code | guess | mark | 
+      | 1234 | 1234  | ++++ | 
+      | 1234 | 1243  | ++-- | 
+      | 1234 | 1423  | +--- | 
+      | 1234 | 4321  | ---- | 
+
+This also allows for different scenarios, so you could provide different scenarios with different tables like this:
+
+    Scenarios: no match
+      | code | guess | mark |
+      | 1234 | 5555  |      |
+
+    Scenarios: 1 number correct
+      | code | guess | mark |
+      | 1234 | 1555  | +    |
+      | 1234 | 2555  | -    |
+
+    (...)
+
+
+### Summary
+
+* Selecting stories for a release - by narrowing down stories for what **really** matters in context of release goals.
+* Selecting stories for an iteration - to provide a working software sufficient to interact with in a meaningful way
+* Acceptance criteria - cucumber features and scenarios for each story. Do this during *iteration planning meeting* (knwon as *Acceptance Test-Driven Planning*)
+* Scenario outlines - to keep features DRY and expressive
+
