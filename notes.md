@@ -245,12 +245,27 @@ Output when calling `cucumber features`:
 
 The Output provides us with:
 
-    1. A print-out of the feauter file
-    1. An annotation of the parts that where run (comments in *Scenario* part)
-    1. A summary of the result
-    1. Further instructions with code snipplets that we can use to enable cucumber to actually be able to run the tests
+1. A print-out of the feauter file
+1. An annotation of the parts that where run (comments in *Scenario* part)
+1. A summary of the result
+1. Further instructions with code snipplets that we can use to enable cucumber to actually be able to run the tests
 
 To run the tests, each scenario in cucumber calls the methods `Given()` `When()`and `Then()`. Each of these methods is given an expression that is matched against a regular expression in a list of *step definitions*. The methods find the proper *step definition* by searching for a regular expression that meets the given argument, and evaluating the code *in* the step definition.
 
 So we need to write these step definitions, and cucumber already provided appropriate skeletons that we can use and that will match the arguments in the feature file!
+
+This is what we write into `02_hello/features/step_definitions/greeter_steps.rb`:
+
+    Given /^a greeter$/ do
+      @greeter = CucumberGreeter.new
+    end
+    
+    When /^I send it the greet message$/ do
+      @message = @greeter.greet
+    end
+    
+    Then /^I should see "([^"]*)"$/ do |arg1|
+      @message.should == greeting 
+    end
+
 
