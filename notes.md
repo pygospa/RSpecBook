@@ -296,3 +296,45 @@ of the first scenario (which evantually also failed)
 Again we hafe the `uninitialized conastat CucumberGreeter (NameError)` telling
 us, that it cannot find the `CucumberGreeter` which is fine as we haven't
 created it, yet.
+
+Making it pass:
+
+    class CucumberGreeter
+      def greet
+        "Hello Cucumber!"
+      end 
+    end
+    
+    
+    Given /^a greeter$/  do  
+      @greeter = CucumberGreeter.new
+    end
+    
+    When /^I send it the greet message$/ do
+      @message = @greeter.greet
+    end
+    
+    Then /^I should see "([^"]*)"$/ do |greeting|
+      @message.should == greeting
+    end
+    
+Gives us the output:
+
+    Feature: greeter says hello
+      In order to start learning RSpec and Cucumber
+      As a reader of the RSpec Book
+      I want a greeter to say Hello
+    
+      Scenario: greeter says hello          # features/greeter_says_hello.feature:7
+        Given a greeter                     # features/step_definitions/greeter_steps.rb:8
+        When I send it the greet message    # features/step_definitions/greeter_steps.rb:12
+        Then I should see "Hello Cucumber!" # features/step_definitions/greeter_steps.rb:16
+    
+    1 scenario (1 passed)
+    3 steps (3 passed)
+    0m0.002s
+
+
+With the RSpec example from the above chapter in the `spec` directory one can
+now run `cucumber features` to run all cucumber features and then `rspec spec`
+to run the specs.
