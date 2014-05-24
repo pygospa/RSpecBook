@@ -25,6 +25,14 @@ of the test-code on internal structure of the test-object. TDD should be done
 on a *meta* level, focussing on what an object *does* instead of what an object
 *is*.
 
+To sum up:
+
+- *TDD* focusses on red/green/refactor, design and documentation (use Test as
+  means to accomplish this). Test-Driven developers provide high-quality code
+  to testers.
+- *Tester* focusses on everything that could go wrong and with Tests makes sure
+  it doesn't
+
 ### Behaviour-Driven Development
 
 BDD tries to put the focus on the behaviour. Think more on the interaction of
@@ -41,15 +49,15 @@ TDD framework that encourages focus on behaviour. In RSpec "Specifications" are
 written that describe an object, e.g.
 
     describe MovieList do
-      contest "when first created" do
+      context "when first created" do
         it "is empty" do
-	  movie_list = MovieList.new
-	  movie_list.should be_empty
-	end
+          movie_list = MovieList.new
+          movie_list.should be_empty
+        end
       end
     end
 
-`it()` creates an *example* of behaviour of MovieList in the *context* htat
+`it()` creates an *example* of behaviour of MovieList in the *context* that
 MovieList is first created. The expected *outcome* is that MovieLis  is empty
 
    - Given: Movie List
@@ -57,14 +65,16 @@ MovieList is first created. The expected *outcome* is that MovieLis  is empty
    - Then: is empty
 
 RSpec supports this by putting the descriptions of the different parts
-toghether to for a sentence: "MovieList when first created is empty"
+toghether to for a sentence: 
+    MovieList when first created 
+      is empty
 
 You could think of further scenarios and put them into code just like above,
 e.g.:
 
-MovieList with 1 item
-is not empty
-includes that item
+    MovieList with 1 item
+      is not empty
+      includes that item
 
 ### Cucumber
 
@@ -82,11 +92,11 @@ Example Code
 
       Scenario: pay a bill
         Given checking acount with $50
-	And a payee named Acme
-	And an acme bill for $37
-	When I pay the Acme bill
-	Then I should have $13 remaining in my checking account
-	And the payment of $37 to Acme should be listed in Recent Payments
+        And a payee named Acme
+        And an acme bill for $37
+        When I pay the Acme bill
+        Then I should have $13 remaining in my checking account
+        And the payment of $37 to Acme should be listed in Recent Payments
 
 Everything up to and including `Scenario` is non-executable documentation.
 Subsequent lines are steps in the scenario.
@@ -130,6 +140,7 @@ Versions for the book code to definitly work:
    - rails 3.0.0
 
 `gem install rpsec --version 2.0.0` with testing via `rspec --help`
+
 `gem install cucumber --version 0.9.2` with testing via `cucumber --help`
 
 ### Hello RSpec
@@ -139,8 +150,8 @@ File `hello/greeter_spec.rb`
     describe "RSpec Greeter" do
       it "should say 'Hello RSpec!' when it receives the greeter() message" do
         greter = RSpecGreeter.new
-	greeting = greeter.greet
-	greeting.should == "Hallo RSpec"
+        greeting = greeter.greet
+        greeting.should == "Hallo RSpec"
       end
     end
 
