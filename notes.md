@@ -164,7 +164,7 @@ File `01_hello/greeter_spec.rb`
 Running it: `rspec greeter_spec.rb` leads to error `uninitialized constant
 RSpecGreeter` telling us, there is no RSpecGreeter class.
 
-Defining it in `hello/greeter_spec.rb` (to keep things simple)
+Defining it in `01_hello/greeter_spec.rb` (to keep things simple)
 
     class RSpecGreeter
       def greet
@@ -188,5 +188,69 @@ Output:
 
 Dots in the first line represent the number of examples run
 
+### Hello Cucumber
 
+Cucumber needs certain directory structure to work:
+
+- *root* is where `cucumber` is executed
+- Inside *root* there is a *spec* directory for the *RSpec* files
+- Inside *root* there is a *features* directory for the *cucumber* files
+- Inside *features* there is a *step_definitions* directory
+
+In `02_hello/features/greeter_says_hello.feature`:
+
+    Feature: greeter says hello
+
+      In order to start learning RSpec and Cucumber
+      As a reader of the RSpec Book
+      I want a greeter to say Hello
+
+      Scenario: greeter says hello
+        Given a greeter
+        When I send it the greet message
+        Then I should see "Hello Cucumber!"
+
+Output when calling `cucumber features`:
+
+    Feature: greeter says hello
+      In order to start learning RSpec and Cucumber
+      As a reader of the RSpec Book
+      I want a greeter to say Hello
+    
+      Scenario: greeter says hello          # features/greeter_says_hello.feature:7
+        Given a greeter                     # features/greeter_says_hello.feature:8
+        When I send it the greet message    # features/greeter_says_hello.feature:9
+        Then I should see "Hello Cucumber!" # features/greeter_says_hello.feature:10
+    
+    1 scenario (1 undefined)
+    3 steps (3 undefined)
+    0m0.002s
+    
+    You can implement step definitions for undefined steps with these snippets:
+    
+    Given /^a greeter$/ do
+      pending # express the regexp above with the code you wish you had
+    end
+    
+    When /^I send it the greet message$/ do
+      pending # express the regexp above with the code you wish you had
+    end
+    
+    Then /^I should see "([^"]*)"$/ do |arg1|
+      pending # express the regexp above with the code you wish you had
+    end
+    
+    If you want snippets in a different programming language, just make sure a file
+    with the appropriate file extension exists where cucumber looks for step definitions.
+
+The Output provides us with:
+
+    1. A print-out of the feauter file
+    1. An annotation of the parts that where run (comments in *Scenario* part)
+    1. A summary of the result
+    1. Further instructions with code snipplets that we can use to enable cucumber to actually be able to run the tests
+
+To run the tests, each scenario in cucumber calls the methods `Given()` `When()`and `Then()`. Each of these methods is given an expression that is matched against a regular expression in a list of *step definitions*. The methods find the proper *step definition* by searching for a regular expression that meets the given argument, and evaluating the code *in* the step definition.
+
+So we need to write these step definitions, and cucumber already provided appropriate skeletons that we can use and that will match the arguments in the feature file!
 
