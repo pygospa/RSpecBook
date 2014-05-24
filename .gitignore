@@ -1,0 +1,8 @@
+# System related files (vim, OS X)
+*.swp
+*.swo
+.DS_Store
+*~
+._*
+.Spotlight-V100
+.Trashes
