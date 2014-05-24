@@ -268,4 +268,31 @@ This is what we write into `02_hello/features/step_definitions/greeter_steps.rb`
       @message.should == greeting 
     end
 
+After running this file we get following failure:
 
+    Feature: greeter says hello
+      In order to start learning RSpec and Cucumber
+      As a reader of the RSpec Book
+      I want a greeter to say Hello
+    
+      Scenario: greeter says hello          # features/greeter_says_hello.feature:7
+        Given a greeter                     # features/step_definitions/greeter_steps.rb:1
+          uninitialized constant CucumberGreeter (NameError)
+          ./features/step_definitions/greeter_steps.rb:2:in `/^a greeter$/'
+          features/greeter_says_hello.feature:8:in `Given a greeter'
+        When I send it the greet message    # features/step_definitions/greeter_steps.rb:5
+        Then I should see "Hello Cucumber!" # features/step_definitions/greeter_steps.rb:9
+    
+    Failing Scenarios:
+    cucumber features/greeter_says_hello.feature:7 # Scenario: greeter says hello
+    
+    1 scenario (1 failed)
+    3 steps (1 failed, 2 skipped)
+    0m0.002s
+
+Cucumber informs us that because of the first step failed, it skipped the rest
+of the first scenario (which evantually also failed)
+
+Again we hafe the `uninitialized conastat CucumberGreeter (NameError)` telling
+us, that it cannot find the `CucumberGreeter` which is fine as we haven't
+created it, yet.
