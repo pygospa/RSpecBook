@@ -338,3 +338,233 @@ Gives us the output:
 With the RSpec example from the above chapter in the `spec` directory one can
 now run `cucumber features` to run all cucumber features and then `rspec spec`
 to run the specs.
+
+
+## Chapter 3: Describing Features
+
+Further examples show BDD development process with RSpec and Cucumber by using
+a problem-solving game as example; game to implement is *Bulls and Cows* (also
+known as *Codebreaker*). With this example *planning a release*, *planning and
+executing an interation* and  *developing code outside-in* are demonstrated. 
+
+### Introducing Codebreaker
+
+It's a logic game, where the *code-breaker* tries to break secret code from
+*code-maker*, i.e. four numbers between 1-6.
+
+Code-breaker gets number of chances, for each chance he makes a guess of four
+numbers. The code-maker then marks the guess with up to four + and - signs,
+where + is an exact match, - a number match in wrong position.
+
+E.g. for secret code *1234* the guess *4256* would earn a *+-*, with + for the
+2 and - for the 4. + and - don't align with position of the numbers, + always
+comes before -.
+
+### Planing the First Release
+
+Principle of BDD: *Enough is enough*, avoiding pitfall *Big Design Up Front
+(BDUF)*.
+
+For the first release: *Game should be playable*. That's it!
+
+Game is playable when:
+- program is startable
+- guess is submitable
+- marks are shown for guess
+- game ends when we crack the code
+
+Select only user stories that get us there!
+
+### Selecting Stories
+
+Start by brainstorming possible stories:
+
+* Code-breaker starts game
+* Code-breaker subimts guess
+* Code-breaker wins game
+* Code-breaker loses game
+* Code-breaker plays again
+* Code-breaker requests hint
+* Code-breaker saves score
+
+Headlines of stories should always just be this: *role* & *action*. For the
+brainstorming phase keep it just at that! Only headlines!
+
+### A Token for Conservation
+
+User Stories should serve as *token for a conservation*, i.e. just enough
+information, not more. User stories are not formal documentation, they should
+fit on a index card. XP-joke: *"If you can't fit a requirement on an index
+card, get a smaller card"*
+
+Formulating user stories:
+
+* **Code-breaker starts game** The code-breaker opens a shell, types a command
+  and sees a welcome message and a prompt to enter the first guess.
+* **Code-breaker submits guess** The code-breaker enerters a guess, and the
+  system replies by marking the guess according to the marking algorithm.
+* **Code-breaker wins the game** The code-breaker enters a guess that mathces
+  the secret code exactly. The system responds by marking the guess with four +
+  signs and a message congratulating the code-breaker on breaking the code in
+  however many guesses it took.
+* **Code-breaker looses game** After a number of turns, the game tells the
+  code-breaker that the game is over (need to decide how many turns ans whether
+  to reveal the code)
+* **Code-breaker plays again** After game is won or lost, the systme prompts
+  code-breaker to play again. If the code-breaker indicates yes, a new game
+  begins. If the code-breaker indicates no, the system shuts down.
+* **Code-breaker requests hint** At any time during a game, the code-breaker
+  can request a hint, at which point the system reveals one of the numbers in
+  the secret code
+* **Code-breaker saves store** After the game is won or lost, the code-breaker
+  can opt to save information about the game: who (initials?), how many turns,
+  and so on
+
+It's ok to have a deliberate lack of detail and even open questions on the
+user-stories. *according to the marking algorithm* is vague and requires some
+conversation with the stakeholders.
+
+### Narrowing Things Down
+
+What do we *really* need for the first implementation? The only two *absolutely
+necessary* to meet the goal to *just being able to play*:
+
+* Code-breaker starts game
+* Code-breaker submits guess
+
+For developer this is enough. Once all gueses are marked
+with + a develper can hit `ctrl-C` to stop. But it would be nice to also have
+replay functionality and to *know* that you won, so you might end up with this.
+
+* Code-breakr starts game
+* Code-breaker submits guess
+* Code-breaker wins game
+* Code-breaker plays again
+
+But then again, you could start discussing about what would happen if player
+looses!
+
+Don't start discussing what happens if player looses, etc. It's a slippery
+slope, that could lead to implementing the entire backlog of stories in the
+first release.
+
+### Context matters
+
+Maybe for a non-develper hiting `ctrl-C` would be insufficiant (he might even
+not know about the functionality) - so always keep the audience of first
+release in mind. For demonstration purposes first release just needs to be
+shown by develper, making the main functionality the main priority. I.e., the
+algorithm! 
+
+This might be different if first implementation is to be handed out to users
+for field-tests, etc. so keep audience in mind, and implement as much as needed
+by audience (and not more). As we are programmers we only need:
+
+* Code-breaker starts game
+* Code-breaker submits guess
+
+### Hidden Story
+
+Sometimes stories aren't obvious at first and are only discovered when
+developing. I.e., what is a guess checked against, to be marked? *secret code*
+Where does it come from?
+
+- Could be part of the `starts game` user-story
+- Could be part of the `submits guess` user-story (created with first guess)
+- Could be a story of it's own.
+
+### User Stories are a Planning Tool
+
+Keep in mind that it's a tool for the developers. Therefore it should be as
+easy as possible. Easiest way to implement *secret code* is as own user-story.
+User stories should have following characteristics:
+
+* **Have business value** Game is no fun unless it generates a different secret
+  code each time
+* **Be testable** That's easy with own story - just start up a bunch of games,
+  ask for the code and compare it.
+* **Be small enough to implement in one iteration** This makes *secret code* a
+  story of it's own, as otherwise other two stories would blow up
+
+### Planning First Iteration
+
+*Acceptance Test-Driven Planning* is one of three practices of *BDD* (other two
+are *Domain-Driven Design* and *Test-Driven Development*).
+
+Aceptance tests should be written before we write code, and they are agreed on
+*during* or *before* the iteration planning meeting, as it let's us consider
+the acceptance criteria in our estimates, improving ability to plan iterations.
+
+### Naratives in Features
+
+Cucumber features allow for simple plain-text descriptions, which allow us to
+first express application features and then automate them in a second step.
+
+Features are made up of three parts:
+1. A Title
+2. A briefe narrative
+2. An arbitrary number of scenarios serving as acceptance criteria
+
+Example for the narrative part of a feature:
+
+    Feature: code-breaker starts game
+
+      As a code-breaker
+      I want to start a game
+      So that I can break the code
+
+The title is just enough to remind us who the feature is fore and what the
+feature is about. Narrative part is free-text, but it's a general
+recommendation to use the Connextra format.
+
+- Title
+- Perspective: Who is using the system? (Role)
+- Requirements: What is he/she doing? (Feature)
+- Reason: Why does he/she care? (Business value)
+
+As template:
+
+    As a <role>
+    I want <feature>
+    So that <business value>
+
+### Acceptance Criteria
+
+Acceptance criteria will be added to the feature to answer the question of how
+to see that a certain business value is actually reached, e.g. 
+- How do I know that a game is started? 
+- How do I know that the requirenment is met?
+- How do I know that I'm done?
+
+Acceptance Criteria answers these questions, e.g.
+- How do you know the game has started? It says something like "Welcome to
+  Codebreaker!"
+- How do you know that you're done? It says "Enter a guess."
+- etc.
+
+In Cucumber Acceptance Criteria is added via a "Scenario":
+
+    Feature: code-breaker starts game
+          
+      As a code-breaker
+      I want to start a game
+      So that I can break the code
+    
+      Scenario: start a game
+        Given I am not yet playing
+        When I start a new game
+        Then I should see "Welcome to Codebreaker!"
+        And I should see "Enter guess:"
+
+* Given: Represents the state of the world, becore an event
+* When: Represents the event
+* Then: Represents the expected outcome
+* And: Takes on quality of previous step
+* But: Takes on quality of previous step
+
+
+Setup: When not already having any line of code, add `features/support/env.rb`
+to make cucumber know that we are using ruby (env.java for Java, etc.)
+
+    
+
