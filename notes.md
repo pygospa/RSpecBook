@@ -832,4 +832,13 @@ we are going to add some behaviour to the `Game`
 
 #### Summary
 
+Up to now, we managed to get to step 2, and wrote our first failing step in
+Cucumber (first *logic* failure - exceptions due to setup don't count), we have
+a conventional directory layout for Ruby libraries, and expressed the first
+feature *from the outside* using cucumber and it's automatable acceptance
+criteria with the simple *Given, When, Then*-Language.
+
+Next step is to work outide-in, using RSpec ot drive out behaviour of
+individual objects.
+
 
