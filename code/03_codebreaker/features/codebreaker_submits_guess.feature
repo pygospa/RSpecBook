@@ -8,3 +8,36 @@ Feature: code-breaker submits guess
 	that matches the number but not the position of a number in the secrate code,
 	the mark includes one - sign.
 
+	Scenario Outline: submit guess
+		Given the secret code is "<code>"
+		When I guess "<guess>"
+		Then the mark should be "<mark>"
+
+		Scenarios: no matches
+			| code | guess | mark |
+		        | 1234 | 5555  |      |
+
+		Scenarios: 1 number correct
+			| code | guess | mark |
+		        | 1234 | 1555  | +    |
+		        | 1234 | 2555  | -    |
+
+		Scenarios: 2 number correct
+			| code | guess | mark |
+		        | 1234 | 5254  | ++   |
+		        | 1234 | 5154  | +-   |
+		        | 1234 | 2545  | --   |
+
+		Scenarios: 3 number correct
+			| code | guess | mark |
+		        | 1234 | 5234  | +++  |
+		        | 1234 | 5134  | ++-  |
+		        | 1234 | 2124  | +--  |
+		        | 1234 | 5123  | ---  |
+
+		Scenarios: all numbers correct
+			| code | guess | mark |
+		        | 1234 | 1234  | ++++ |
+		        | 1234 | 1243  | ++-- |
+		        | 1234 | 1423  | +--- |
+		        | 1234 | 4321  | ---- |
