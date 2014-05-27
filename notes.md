@@ -1112,4 +1112,88 @@ snipplets for the step definitions. The first step definition:
 This will render 14 failures for 14 examples, showing us everything is wired up
 correctly. Error tells us, that start() got an unexpected argument.
 
+### Responding to Change
 
+Try to minimize impact of change by doing them as gentle as possible, e.g. if
+we add an argument to start(), all previous examples will fail. So we add a
+default nil-Argument to keep all other specs running.
+
+    def start(secret=nil)
+      @output.puts 'Welcome to Codebreaker!'
+      @output.puts 'Enter guess:'
+    end
+
+Now we have 14 new passing scenarios and keep our old scenario and specs
+running. Now is the time to change the other specs, as we have the assurance
+that our code still behaves the same way, and there are no other mistakes.
+
+Change specs to include a secret argument:
+
+    it "sends a welcome message" do
+      output.should_receive(:puts).with('Welcome to Codebreaker!')
+      game.start('1234')
+    end
+ 
+    it "prompts for the first guess" do
+      output.should_receive(:puts).with('Enter guess:')
+      game.start('1234')
+    end
+
+The examples should still be passing. Now we can modify `start()` again:
+
+    def start(secret)
+      @output.puts 'Welcome to Codebreaker!'
+      @output.puts 'Enter guess:'
+    end
+   
+Now both, Scenario and RSpecs should pass
+
+### Assess the Impact on Other Features
+
+Our feature runs but what about the other features? The first one failes, as
+the 'When I start a new game' feature is still using the old `start()` method
+with no arguments, and needs to be changed to include an argument as well.
+
+### A Small Change Goes a Long Way
+
+As everything passes in Cucumber, we do not need to go down to RSpec and try
+implementing the next step:
+
+    When /^I guess "([^"]*)"$/ do |guess|
+      @game.guess(guess)
+    end
+
+As this expects a @game instance variable we change the above step, saving the
+created game into a instance variable. 
+
+Again we wrote *Code we wished we had* and need to now implement `guess()` as
+cucumber tells us that it's unknown
+
+Doing as little as possible to make the code run, we define guess in game:
+
+    def guess(guess)
+    end
+
+And now we have all new examples passing!
+
+After adding the following we will get an logic error, instead of structural,
+for all 14 scenarios! That is where we want to end up, to proceed to RSpec!
+
+    Then /^the mark should be "([^"]*)"$/ do |mark|
+      output.messages.should include(mark)
+    end
+
+yields:
+
+    expected ["Welcome to Codebreaker!", "Enter guess:"] to include ""
+      (RSpec::Expectations::ExpectationNotMetError)
+
+### Summary:
+
+Adding a feature to an existing code base might lead to many failures at once
+if one brute fored the change. Instead of brute forcing, try to keep existing
+specs passing and still make progress on Cucumber scenarios. Make changes to
+the existing code base as it becomes obsolete (i.e. first introducing a default
+parameter and lager removing it, when it becomes obsolete)
+
+This helps "moving with confidence" as we keep the examples passing.
