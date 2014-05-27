@@ -4,14 +4,23 @@ module Codebreaker
   describe Game do
     describe "#start" do
 
-      it "sends a welcome message" do
-        output = double('output')
-        game = Game.new(output)
-        output.should_receive(:puts).with('Welcome to Codebreaker!')
-        game.start
+      before(:each) do
+        @output = double('output').as_null_object
+        @game = Game.new(@output)
+        # Alternative to eliminate @-signs
+        # let(:output) { double('output').as_null_object }
+        # let(:game)   { Game.new(output) }
       end
 
-      it "prompts for the first guess"
+      it "sends a welcome message" do
+        @output.should_receive(:puts).with('Welcome to Codebreaker!')
+        @game.start
+      end
+
+      it "prompts for the first guess" do
+        @output.should_receive(:puts).with('Enter guess:')
+        @game.start
+      end
     end
   end
 end
