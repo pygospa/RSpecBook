@@ -1197,3 +1197,151 @@ the existing code base as it becomes obsolete (i.e. first introducing a default
 parameter and lager removing it, when it becomes obsolete)
 
 This helps "moving with confidence" as we keep the examples passing.
+
+## Chapter 7: Specifying an Algorithm
+
+First RSpec code examples where easy, because they had a simple responsibility - 
+send messages to `output`. The next responsibility is more complex: "We need
+to specify the algorithm we're going to use the mark a guess submitted by the
+codebreaker."
+
+### Begin with the Simplest Example
+
+"At any point in this part of the process, we want to find the example that we
+think would be the simplest to implement."
+
+    (...)
+    describe "#guess" do
+      context "with no matches" do
+        it "sends a mark with ''" do
+          game.start('1234')
+          output.should_receive(:puts).with('')
+          game.guess('5555')
+        end
+      end
+    end
+
+It will fail, now we do the simplest think possible to make it pass:
+
+    def guess(guess)
+      @output.puts ''
+    end
+
+Even though we know this is not our finished algorithm, it will help us develop
+the algorithm step by step, making sure that every example has passed once and
+will pass again when working on new examples!
+
+### Follow Up with the Next Simplest Example
+
+    context "with 1 number match" do
+      it "sends a mark with '-'" do
+        game.start('1234')
+        output.should_receive(:puts).with('-')
+        game.guess('2555')
+      end
+    end
+
+Making it pass:
+
+    def guess(guess)
+      if @secret.include?(guess[0])
+        @output.puts '-'
+      else
+        @output.puts ''
+      end
+    end
+
+This will make both, the previous and the current example pass.
+
+"This is one of those moments that makes people who are new to TDD
+uncomfortable. We know with some certainty that this is not the implementation
+we want when we're finished, and we might even have a good idea of what that
+implementation should be. The problem is that we don't have enough examples to
+really specify what this code *should* do, so any code that we write right now
+would be speculative."
+
+### Refactor to Remove Duplicatoin
+
+Remove the duplication of sending messages to the output:
+
+    def guess(guess)
+      if @secret.include?(guess[0])
+        mark = '-'
+      else
+        mark = ''
+      end
+      @output.puts mark
+    end
+
+We have only one number match, and still need to test one exact match:
+
+    context "with 1 exact match" do
+      it "sends a mark with '+'" do
+        game.start('1234')
+        output.should_receive(:puts).with('+')
+        game.guess('1555')
+      end
+    end
+
+Add code:
+
+    def guess(guess)
+      if guess[0] == @secret[0]
+        mark = '+'
+      elsif @secret.include?(guess[0])
+        mark = '-'
+      else
+        mark = ''
+      end
+      @output.puts mark
+    end
+
+### Refactor to Express Intent
+
+Refactoring is about improving design, not only removing duplications! 
+`if guess[0] == @secret[0]` and `elsif @secret.include?(guess[0])` might be
+clear to us (now), but they really badly express our intent, so another
+programmer would have a hard time reading and understanding the code.
+
+We use *Extract Method refactoring* to introduce abstraction that more clearly
+express the intent of the `guess()`-Method:
+
+    def guess(guess)
+      if exact_match?(guess, 0)
+        mark = '+'
+      elsif @secret.include?(guess[0])
+        mark = '-'
+      else
+        mark = ''
+      end
+      @output.puts mark
+    end
+
+    def exact_match?(guess, index)
+      guess[index] == @secret[index]
+    end
+
+After each step of refactoring, check specs. As they still work as expected, do
+some more refactoring to further clarify intend:
+
+     def guess(guess)
+      if exact_match?(guess, 0)
+        mark = '+'
+      elsif number_match?(guess, 0)
+        mark = '-'
+      else
+        mark = ''
+      end
+      @output.puts mark
+    end
+
+    def exact_match?(guess, index)
+      guess[index] == @secret[index]
+    end
+
+    def number_match?(guess, index)
+      @secret.include?(guess[index])
+    end
+
+Now we have *self-documenting* code, that paraphrases English rather than being
+cryptic.
