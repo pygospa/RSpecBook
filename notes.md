@@ -1094,4 +1094,7 @@ Follwo TDD red/green/refactor, and rerun cucumber, once the code examples pass.
 business-facing scenarios in Cucumber and working our way inward to the
 underlying objects with RSpec."
 
+## Chapter 7: Adding New Features
 
+Algorithms are really interesting because they tend to cover a lot of possible
+cases with a small amount of code.
