@@ -1098,3 +1098,18 @@ underlying objects with RSpec."
 
 Algorithms are really interesting because they tend to cover a lot of possible
 cases with a small amount of code.
+
+Running cucumber with the `codebreaker_submits_guess.feature` will give us a
+snipplets for the step definitions. The first step definition:
+
+### Step Definitions
+
+    Given /^the secret code is "([^"]*)"$/ do |secret|
+      game = Codebreaker::Game.new(output)
+      game.start(secret)
+    end
+
+This will render 14 failures for 14 examples, showing us everything is wired up
+correctly. Error tells us, that start() got an unexpected argument.
+
+
