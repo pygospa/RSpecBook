@@ -1081,3 +1081,17 @@ settings and starting it:
 For Windows, above file can be used, but a codebreaker.bat must be included!
 
     @"ruby.exe" "%~dn0" %*
+
+
+### Summary
+
+Start with a logical failure in a Cucumber scenario, which is the cue to jump
+from the outer circle (Cucumber) to the inner circle (RSpec) of the BDD Cycle.
+
+Follwo TDD red/green/refactor, and rerun cucumber, once the code examples pass.
+
+"This is the BDD cycle. Driving development form the outside in, starting with
+business-facing scenarios in Cucumber and working our way inward to the
+underlying objects with RSpec."
+
+
