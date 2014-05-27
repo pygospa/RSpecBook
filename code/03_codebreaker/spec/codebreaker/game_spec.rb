@@ -3,23 +3,28 @@ require 'spec_helper'
 module Codebreaker
   describe Game do
     describe "#start" do
+      # let is rund first time and then cached and returned every time
+      # the value is requested (i.e. Memoized object)
+      let(:output) { double('output').as_null_object }
+      let(:game)   { Game.new(output) }
 
-      before(:each) do
-        @output = double('output').as_null_object
-        @game = Game.new(@output)
-        # Alternative to eliminate @-signs
-        # let(:output) { double('output').as_null_object }
-        # let(:game)   { Game.new(output) }
-      end
+#      Alternative:
+#      Pro: Called everytime an example is run
+#      Con: @-Notation often leads to problems
+#
+#      before(:each) do
+#        @output = double('output').as_null_object
+#        @game = Game.new(@output)
+#      end
 
       it "sends a welcome message" do
-        @output.should_receive(:puts).with('Welcome to Codebreaker!')
-        @game.start
+        output.should_receive(:puts).with('Welcome to Codebreaker!')
+        game.start
       end
 
       it "prompts for the first guess" do
-        @output.should_receive(:puts).with('Enter guess:')
-        @game.start
+        output.should_receive(:puts).with('Enter guess:')
+        game.start
       end
     end
   end

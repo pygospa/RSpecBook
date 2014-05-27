@@ -830,7 +830,7 @@ The next error is no `exception` error, but a logical error:
 This is when we leave the BDD Cycle, and go into the RSpec cycle, because now
 we are going to add some behaviour to the `Game`
 
-#### Summary
+### Summary
 
 Up to now, we managed to get to step 2, and wrote our first failing step in
 Cucumber (first *logic* failure - exceptions due to setup don't count), we have
@@ -842,3 +842,242 @@ Next step is to work outide-in, using RSpec ot drive out behaviour of
 individual objects.
 
 
+## Chapter 5: Describing Code with RSpec
+
+Cucumber describes *behaviour* of application *from the outside*, i.e. at
+application level. RSpec *describes* behaviour at a more granular level, i.e.
+the behaviour of a *class*.
+
+### Getting started
+
+RSpec expects code in `spec` directory, and per convention every source-file
+has it's own spec file, e.g. for `lib/codebreaker/game.rb` we'll expect a
+`spec/codebreaker/game_spec.rb`
+
+    require 'spec_helper'
+
+    module Codebreaker
+      describe Game do
+        describe "#start" do
+          it "sends a welcome message"
+          it "prompts for the first guess"
+        end
+      end
+    end
+
+require `rspec_helper.rb` will be a file that will require the module which we
+will be working with:
+
+    require 'codebreaker'
+
+So again (same as with Cucumber), `game_spec.rb` will require
+`spec_helper`which requires `codebreaker.rb` which requires `game.rb`
+
+The `describe()` method returns a subclass of `RSpec::Core::ExampleGroup`,
+which is a group of examples of the expected behavior of an object - similar to
+TestCase in Unit-tests (like JUnit, or Test::Unit).
+
+The `it()` method creates an *example* (as an instance of `ExampleGroup`)
+
+running `rspec spec/codebreaker/game_spec.rb` will yield us two pending tests.
+They are pending because we have just described the text but haven't
+implemented them. We do so by giving `it()` a block. Without the block, RSpec
+recognizes the examples as pending.
+
+### Red: Start with a failing Code Example
+
+    require 'spec_helper'
+
+    module Codebreaker
+      describe Game do
+        describe "#start" do
+          it "sends a welcome message" do
+            output = double('output')
+            game = Game.new(output)
+            output.should_receive(:puts).with('Welcome to Codebreaker!')
+            game.start
+          end
+
+          it "prompts for the first guess"
+        end
+      end
+    end
+
+Instead of writing an own test double we use the test double framework
+`RSpec::Mocks`, via `output = double('output')`, which is then passed to the
+new Game instance. After that an expectation is formualted  via
+`output.should_receive(:puts).with('Welcome to Codebreaker!')`
+
+This yields the wanted error:
+
+    Failures:
+      1) Codebreaker::Game#start sends a welcome message
+         Failure/Error: output.should_receive(:puts).with('Welcome to Codebreaker!')
+         (Double "output").puts("Welcome to Codebreaker!")
+             expected: 1 time
+             received: 0 times
+
+Adding the following we get our first green example:
+
+    module Codebreaker
+      class Game
+        def initalize(output)
+          @output = output
+        end
+
+        def start
+          @output.puts 'Welcome to Codebreaker!'
+        end
+      end
+    end
+
+Next step in TDD-Cycle would be refactoring, but as there is no code
+duplicatoin yet, no refactoring is needed. So we return to our BDD-Cycle, to
+see if we progressed in our cycle:
+
+With green output it will show us that 
+- Given I am not yet playing
+- When I start a new game
+- Then I should see "Welcome to Codebreaker!"
+are already passing for the first scenario.
+
+We still get an error for the next step:
+
+    Scenario: start game
+      Given I am not yet playing
+      When I start a new game
+      Then I should see "Welcome to Codebreaker!"
+      And I should see "Enter guess:"
+        expected ["Welcome to Codebreaker!"] to include "Enter guess:" (RSpec::Expectations::ExpectationNotMetError)
+
+
+### Next step
+
+Example:
+
+    it "prompts for the first geuss" do
+      output = double('output')
+      game = Game.new(output)
+      output.should_receive(:puts).with('Enter guess:')
+      game.start
+    end
+
+We'll watch it fail with `rspec spec --color --format doc` and make it pass:
+
+    def start
+      @output.puts 'Welcome to Codebreaker!'
+      @output.puts 'Enter guess:'
+    end
+
+Problem: This makes both examples fail, because both examples only expect their
+sentence to be in output, but they also find the other one (i.e. the example
+for 'Welcome to Codebreaker!' will also find 'Enter guess:' and therefore
+fail).
+
+We therefore tell output at creation that it should only listen for expected
+messages and ignore the rest, via (`game_spec.rb`):
+
+    (...)
+    it "sends a welcome message" do
+      output = double('output').as_null_object
+    (...)
+    it "prompts for the first guess" do
+      output = double('output').as_null_object
+
+`as_null_object()` implements the 'Null Object design pattern'
+
+Now both examples should pass
+
+### Refactor
+
+"Refactoring is the process of changing a software system in such a way that it
+does not alter the external behavior of the code yet improves its improves its
+interal structure" (FBB+99)
+
+One makes sure to not change behavior by running examples between every change,
+also at a granular scale, to, e.g. eliminate duplication - even if duplications
+are realised earlier, one preferes to "refactor *in the green* rather than *in
+the red*"
+
+We *also* refactor examples! The example game application has small enough code
+to not needing to be refactored, but the examples have code duplications,
+violating the DRY-philosophy.
+
+Two possible solutions:
+
+#### 1. before(:each)
+
+A block passed to `before(:each)` will be run before each example. Each example
+that is executed in the same object (i.e. describe-block), so they all have
+access to any instance variables declared in `before(:each)`. As they are
+instance variables, they are prefixed with @, which could be tedious and error
+prone.
+
+    module Codebreaker
+      describe Game do
+        describe "#start" do
+          before(:each) do
+            @output = double('output').as_null_object
+            @game = Game.new(@output)
+          end
+
+          it "sends a welcome message" do
+            @output.should_receive(:puts).with('Welcome to Codebreaker!')
+            @game.start
+          end
+
+          it "prompts for the first guess" do
+            @output.should_receive(:puts).with('Enter guess:')
+            @game.start
+          end
+        end
+      end
+    end
+
+#### 2. let(:method) { }
+
+let binds a symbol to a method, and takes in a symbol, which is treated as
+method name, and a block, which represents the implementation of that method.
+
+"The first call to `let()` defines a memoized `output()` method that returns a
+`double` object. Memoized means that the first time the method is invoked, the
+return value is cached and that same value is returned every subsequent time
+the method is invoked within the same scope"
+
+    module Codebreaker
+      describe Game do
+        describe "#start" do
+          let(:output) { double('output').as_null_object }
+          let(:game)   { Game.new(output) }
+
+          it "sends a welcome message" do
+            output.should_receive(:puts).with('Welcome to Codebreaker!')
+            game.start
+          end
+
+          it "prompts for the first guess" do
+            output.should_receive(:puts).with('Enter guess:')
+            game.start
+          end
+        end
+      end
+    end
+
+
+Now RSpec and cucumber should return passing examples and a passing scenario!
+
+
+We already have good infrastructure for the game. To actually make it run, we
+create a `bin` folder wich will hold a script calling the game with proper
+settings and starting it:
+
+    #!/usr/bin/env ruby
+    $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+    require 'codebreaker'
+
+    game = Codebreaker::Game.new(STDOUT)
+    game.start
+
+For Windows, above file can be used, but a codebreaker.bat must be included!
+
+    @"ruby.exe" "%~dn0" %*
